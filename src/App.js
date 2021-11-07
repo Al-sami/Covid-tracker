@@ -13,6 +13,17 @@ import "./App.css";
 function App() {
   const [countries, setCountries] = useState([]);
   const [countryClicked, setCountryClicked] = useState("worldwide");
+  const [countryInfo, setCountryInfo] = useState({});
+
+  useEffect(() => {
+    fetch("https://disease.sh/v3/covid-19/all")
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        setCountryInfo(data);
+      });
+  }, []);
 
   useEffect(() => {
     const getCountriesInfo = async () =>
@@ -30,10 +41,25 @@ function App() {
     getCountriesInfo();
   }, []);
 
-  function handleCountryChange(event) {
+  async function handleCountryChange(event) {
     const newCountry = event.target.value;
-    console.log(newCountry);
-    setCountryClicked(newCountry);
+
+    const url =
+      newCountry === "worldwide"
+        ? "https://disease.sh/v3/covid-19/all"
+        : `https://disease.sh/v3/covid-19/countries/${newCountry}`;
+
+    await fetch(url)
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        setCountryClicked(newCountry);
+        setCountryInfo(data);
+      });
+
+    //  if worldwide then link https://disease.sh/v3/covid-19/all
+    // else if any country https://disease.sh/v3/covid-19/countries/{country}
   }
 
   return (
@@ -43,11 +69,7 @@ function App() {
           <h1>Covid-19 Tracker</h1>
 
           <FormControl className="app_dropdown">
-            <Select
-              value={countryClicked}
-              variant="outlined"
-              onChange={handleCountryChange}
-            >
+            <Select value={countryClicked} onChange={handleCountryChange}>
               <MenuItem value="worldwide">Worldwide</MenuItem>
               {countries.map((country) => (
                 <MenuItem value={country.value}>{country.name}</MenuItem>
@@ -56,9 +78,21 @@ function App() {
           </FormControl>
         </div>
         <div className="app_stats">
-          <InfoBox title="Coronavirus Cases" cases="123" total="2000" />
-          <InfoBox title="Recovered" cases="123" total="2002" />
-          <InfoBox title="Deaths" cases="1234" total="2001" />
+          <InfoBox
+            title="Coronavirus Cases"
+            cases={countryInfo.todayCases}
+            total={countryInfo.cases}
+          />
+          <InfoBox
+            title="Recovered"
+            cases={countryInfo.todayRecovered}
+            total={countryInfo.recovered}
+          />
+          <InfoBox
+            title="Deaths"
+            cases={countryInfo.todayDeaths}
+            total={countryInfo.deaths}
+          />
         </div>
         <Map />
       </div>
