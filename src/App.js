@@ -8,12 +8,15 @@ import {
 } from "@mui/material";
 import InfoBox from "./Components/InfoBox";
 import Map from "./Components/Map";
+import Table from "./Components/Table";
+import { sortedData } from "./util";
 import "./App.css";
 //https://disease.sh/v3/covid-19/countries
 function App() {
   const [countries, setCountries] = useState([]);
   const [countryClicked, setCountryClicked] = useState("worldwide");
   const [countryInfo, setCountryInfo] = useState({});
+  const [countryData, setCountryData] = useState([]);
 
   useEffect(() => {
     fetch("https://disease.sh/v3/covid-19/all")
@@ -36,7 +39,9 @@ function App() {
               value: country.countryInfo.iso2,
             };
           });
+
           setCountries(countries);
+          setCountryData(sortedData(data));
         });
     getCountriesInfo();
   }, []);
@@ -56,6 +61,7 @@ function App() {
       .then((data) => {
         setCountryClicked(newCountry);
         setCountryInfo(data);
+        console.log(data);
       });
 
     //  if worldwide then link https://disease.sh/v3/covid-19/all
@@ -99,8 +105,8 @@ function App() {
 
       <Card className="app_right">
         <CardContent>
-          {/* Table */}
           <h3>Live Cases by country</h3>
+          <Table tableData={countryData} />
           {/* Graph */}
           <h3>Worldwide new cases</h3>
         </CardContent>
