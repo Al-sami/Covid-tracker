@@ -9,6 +9,7 @@ import {
 import InfoBox from "./Components/InfoBox";
 import Map from "./Components/Map";
 import Table from "./Components/Table";
+import LineGraph from "./Components/LineGraph";
 import { sortedData } from "./util";
 import "./App.css";
 //https://disease.sh/v3/covid-19/countries
@@ -102,12 +103,11 @@ function App() {
         </div>
         <Map />
       </div>
-
       <Card className="app_right">
         <CardContent>
           <h3>Live Cases by country</h3>
           <Table tableData={countryData} />
-          {/* Graph */}
+          <LineGraph />
           <h3>Worldwide new cases</h3>
         </CardContent>
       </Card>
