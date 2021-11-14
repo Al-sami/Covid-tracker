@@ -11,13 +11,16 @@ import Map from "./Components/Map";
 import Table from "./Components/Table";
 import LineGraph from "./Components/LineGraph";
 import { sortedData } from "./util";
+// import "leaflet/dist/leaflet.css";
 import "./App.css";
-//https://disease.sh/v3/covid-19/countries
 function App() {
   const [countries, setCountries] = useState([]);
   const [countryClicked, setCountryClicked] = useState("worldwide");
   const [countryInfo, setCountryInfo] = useState({});
   const [countryData, setCountryData] = useState([]);
+  const [mapCenter, setMapCenter] = useState([34.80746, -40.4096]);
+  const [mapZoom, setMapZoom] = useState(3);
+  const [mapCirlcle, setMapCircle] = useState([]);
 
   useEffect(() => {
     fetch("https://disease.sh/v3/covid-19/all")
@@ -40,7 +43,7 @@ function App() {
               value: country.countryInfo.iso2,
             };
           });
-
+          setMapCircle(data);
           setCountries(countries);
           setCountryData(sortedData(data));
         });
@@ -62,6 +65,14 @@ function App() {
       .then((data) => {
         setCountryClicked(newCountry);
         setCountryInfo(data);
+        if (event.target.value === "worldwide") {
+          setMapCenter([34.80746, -40.4096]);
+          setMapZoom(3);
+        } else {
+          setMapCenter([data.countryInfo.lat, data.countryInfo.long]);
+          setMapZoom(4);
+        }
+
         console.log(data);
       });
 
@@ -101,14 +112,14 @@ function App() {
             total={countryInfo.deaths}
           />
         </div>
-        <Map />
+        <Map countries={mapCirlcle} center={mapCenter} zoom={mapZoom} />
       </div>
       <Card className="app_right">
         <CardContent>
           <h3>Live Cases by country</h3>
           <Table tableData={countryData} />
-          <LineGraph />
           <h3>Worldwide new cases</h3>
+          <LineGraph />
         </CardContent>
       </Card>
     </div>
