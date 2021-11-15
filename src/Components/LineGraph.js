@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import numeral from "numeral";
 import { Line } from "react-chartjs-2";
 
-const buildChartData = (data, caseType = "cases") => {
+const buildChartData = (data, caseType) => {
+  console.log(caseType);
   const ChartData = [];
   let lastDataPoint;
   for (let date in data.cases) {
@@ -74,7 +75,8 @@ function LineGraph({ caseType = "cases" }) {
       await fetch("https://disease.sh/v3/covid-19/historical/all")
         .then((response) => response.json())
         .then((data) => {
-          setData(buildChartData(data, "cases"));
+          console.log(data);
+          setData(buildChartData(data, caseType));
         });
     };
 
@@ -82,7 +84,7 @@ function LineGraph({ caseType = "cases" }) {
   }, [caseType]);
   return (
     <div>
-      {data?.length > 0 && (
+      {data ? (
         <Line
           data={{
             datasets: [
@@ -95,6 +97,8 @@ function LineGraph({ caseType = "cases" }) {
           }}
           options={options}
         />
+      ) : (
+        <h1>"No data"</h1>
       )}
     </div>
   );
