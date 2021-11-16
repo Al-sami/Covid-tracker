@@ -12,6 +12,7 @@ import Table from "./Components/Table";
 import LineGraph from "./Components/LineGraph";
 import { prettyPrintData, sortedData } from "./util";
 // import "leaflet/dist/leaflet.css";
+
 import "./App.css";
 function App() {
   const [countries, setCountries] = useState([]);
@@ -98,18 +99,23 @@ function App() {
         </div>
         <div className="app_stats">
           <InfoBox
+            isRed
+            active={casesType === "cases"}
             title="Coronavirus Cases"
             onClick={(e) => setCasesType("cases")}
             cases={prettyPrintData(countryInfo.todayCases)}
             total={prettyPrintData(countryInfo.cases)}
           />
           <InfoBox
+            active={casesType === "recovered"}
             onClick={(e) => setCasesType("recovered")}
             title="Recovered"
             cases={prettyPrintData(countryInfo.todayRecovered)}
             total={prettyPrintData(countryInfo.recovered)}
           />
           <InfoBox
+            isRed
+            active={casesType === "deaths"}
             onClick={(e) => setCasesType("deaths")}
             title="Deaths"
             cases={prettyPrintData(countryInfo.todayDeaths)}
@@ -127,8 +133,8 @@ function App() {
         <CardContent>
           <h3>Live Cases by country</h3>
           <Table tableData={countryData} />
-          <h3>Worldwide new cases</h3>
-          <LineGraph caseType={casesType} />
+          <h3 className="appGraph_header">Worldwide new {casesType}</h3>
+          <LineGraph className="app_graph" caseType={casesType} />
         </CardContent>
       </Card>
     </div>

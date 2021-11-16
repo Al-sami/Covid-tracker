@@ -3,7 +3,7 @@ import numeral from "numeral";
 import { Line } from "react-chartjs-2";
 
 const buildChartData = (data, caseType) => {
-  console.log(caseType);
+  console.log(data);
   const ChartData = [];
   let lastDataPoint;
   for (let date in data.cases) {
@@ -12,6 +12,9 @@ const buildChartData = (data, caseType) => {
         x: date,
         y: data[caseType][date] - lastDataPoint,
       };
+      if (caseType === "recovered") {
+        console.log(newDataPoint);
+      }
       ChartData.push(newDataPoint);
     }
     lastDataPoint = data[caseType][date];
@@ -19,7 +22,7 @@ const buildChartData = (data, caseType) => {
   return ChartData;
 };
 
-function LineGraph({ caseType = "cases" }) {
+function LineGraph({ className, caseType = "cases" }) {
   const [data, setData] = useState({});
 
   const options = {
@@ -72,10 +75,9 @@ function LineGraph({ caseType = "cases" }) {
 
   useEffect(() => {
     const gettingChartData = async () => {
-      await fetch("https://disease.sh/v3/covid-19/historical/all")
+      await fetch("https://disease.sh/v3/covid-19/historical/all?lastdays=112")
         .then((response) => response.json())
         .then((data) => {
-          console.log(data);
           setData(buildChartData(data, caseType));
         });
     };
@@ -83,8 +85,8 @@ function LineGraph({ caseType = "cases" }) {
     gettingChartData();
   }, [caseType]);
   return (
-    <div>
-      {data ? (
+    <div className={className}>
+      {data?.length > 0 && (
         <Line
           data={{
             datasets: [
@@ -97,8 +99,6 @@ function LineGraph({ caseType = "cases" }) {
           }}
           options={options}
         />
-      ) : (
-        <h1>"No data"</h1>
       )}
     </div>
   );

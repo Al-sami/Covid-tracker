@@ -26,7 +26,6 @@ export const prettyPrintData = (num) =>
   num ? `+${numeral(num).format("0.0a")}` : null;
 
 export const showCircleOnMap = (data, casestype = "cases") => {
-  console.log(casesTypeColor[casestype].hex);
   return data.map((country) => (
     <Circle
       center={[country.countryInfo.lat, country.countryInfo.long]}
